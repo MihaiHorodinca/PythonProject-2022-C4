@@ -3,10 +3,12 @@ import sys
 import statistics
 import matplotlib.pyplot as plt
 
-AGE_COLUMN_NAME: str = "varsta"
+AGE_COLUMN_NAME = "varsta"
 SEX_COLUMN_NAME = "sex"
 IQ_COLUMN_NAME = "IQ"
 NAT_COLUMN_NAME = "nationalitate"
+POSSIBLE_NATIONALITY = ["RO", "USA", "PL", "RU", "CZ", "FR", "UK", "IN", "DE", "AE"]
+POSSIBLE_SEX = ["M", "F"]
 
 
 def main():
@@ -37,10 +39,12 @@ def compute_basic_stats(fileName):
         valueDict = csv.DictReader(file)
 
         for row in valueDict:
-            ageList.append(int(row[AGE_COLUMN_NAME]))
-            sexList.append(row[SEX_COLUMN_NAME])
-            IQList.append(int(row[IQ_COLUMN_NAME]))
-            natList.append(row[NAT_COLUMN_NAME])
+            # Only take into consideration the expected values
+            if row[AGE_COLUMN_NAME].isnumeric() and row[IQ_COLUMN_NAME].isnumeric() and row[SEX_COLUMN_NAME] in POSSIBLE_SEX and row[NAT_COLUMN_NAME] in POSSIBLE_NATIONALITY:
+                ageList.append(int(row[AGE_COLUMN_NAME]))
+                sexList.append(row[SEX_COLUMN_NAME])
+                IQList.append(int(row[IQ_COLUMN_NAME]))
+                natList.append(row[NAT_COLUMN_NAME])
 
     print(ageList)
     print(statistics.mean(ageList))
@@ -68,7 +72,8 @@ def compute_plot(fileName):
         valueDict = csv.DictReader(file)
 
         # Save (age, IQ) tuples for all the data points and sort them by age
-        plotValues = [(int(row[AGE_COLUMN_NAME]), int(row[IQ_COLUMN_NAME])) for row in valueDict]
+        plotValues = [(int(row[AGE_COLUMN_NAME]), int(row[IQ_COLUMN_NAME]))
+                      for row in valueDict if row[AGE_COLUMN_NAME].isnumeric() and row[IQ_COLUMN_NAME].isnumeric()]
         plotValues.sort(key=lambda x: x[0])
 
         # First plot where X is the ageGroup and Y is the average for that group
